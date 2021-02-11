@@ -48,6 +48,7 @@
     "@worldsibu/convector-core": "^1.3.8",
     "@worldsibu/convector-storage-stub": "^1.3.8",
     "reflect-metadata": "^0.1.12",
+    "semver": "^7.3.4",
     "tslib": "^1.9.0"
   },
   "chaincodeDevDependencies": {
