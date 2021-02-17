@@ -1,8 +1,11 @@
 /** @module @worldsibu/convector-core-storage */
 
+import * as g from 'window-or-global';
 import { createNamespace, Namespace } from 'cls-hooked';
 
-export const BaseStorageNamespace: Namespace = createNamespace('@worldsibu/convector-core-storage');
+export const BaseStorageNamespace: Namespace = g.BaseStorageNamespace || createNamespace('@worldsibu/convector-core-storage');
+
+g.BaseStorageNamespace = BaseStorageNamespace;
 
 export abstract class BaseStorage {
   private static _currentStorage: BaseStorage;

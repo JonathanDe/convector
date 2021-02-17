@@ -5,7 +5,7 @@ import * as selfsigned from 'selfsigned';
 import { pki, asn1, md } from 'node-forge';
 import { Chaincode, IConfig } from '@worldsibu/convector-core-chaincode';
 import { ChaincodeMockStub, Transform } from '@theledger/fabric-mock-stub';
-import { ControllerAdapter, ClientResponseError } from '@worldsibu/convector-core';
+import { ControllerAdapter, ClientResponseError, BaseStorageNamespace, BaseStorage } from '@worldsibu/convector-core';
 
 // Remove when this gets merged
 // https://github.com/wearetheledger/fabric-node-chaincode-utils/pull/23
@@ -45,11 +45,15 @@ export class MockControllerAdapter implements ControllerAdapter {
       map.set(k, Buffer.from(typeof v === 'string' ? v : JSON.stringify(v)));
       return map;
     }, new Map<string, Buffer>());
+    let response;
 
-    const response = await this.stub.mockInvoke(uuid(), [
-      `${controller}_${name}`,
-      ...args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg === undefined ? undefined : arg.toString())
-    ], transientMap);
+    await BaseStorageNamespace.runAndReturn(async ()=> {
+      BaseStorage.current = this.stub as any;
+      response = await this.stub.mockInvoke(uuid(), [
+        `${controller}_${name}`,
+        ...args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg === undefined ? undefined : arg.toString())
+      ], transientMap);
+    });
 
     if (response.status === 500) {
       let err: any = response.message.toString();
